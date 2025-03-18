@@ -58,6 +58,27 @@
             background-color: white;
         }
 
+        .form input::placeholder {
+            color: rgba(0, 60, 150, 0.5);
+            font-weight: normal;
+        }
+
+        .form input[type="number"] {
+            -moz-appearance: textfield;
+        }
+
+        .form input[type="number"]::-webkit-inner-spin-button, 
+        .form input[type="number"]::-webkit-outer-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        .form input[type="number"] {
+            appearance: textfield;
+            -webkit-appearance: none;
+            -moz-appearance: textfield;
+        }
+
         .login_btn, .confirm_btn, .cancel_btn {
             font-size: 20px;
             color: white;
@@ -97,22 +118,21 @@
             <input type="text" id="schoolName" placeholder="School Name">
             <select id="registrationType" onchange="showForm()">
                 <option value="">Exam Types</option>
-               
                 <option value="terminal">Terminal Registration</option>
             </select>
             <div id="terminalCandidates" style="display:none;">
-                <input type="number" id="nursery" placeholder="Nursery">
-                <input type="number" id="kg1" placeholder="KG 1">
-                <input type="number" id="kg2" placeholder="KG 2">
-                <input type="number" id="basic1" placeholder="Basic 1">
-                <input type="number" id="basic2" placeholder="Basic 2">
-                <input type="number" id="basic3" placeholder="Basic 3">
-                <input type="number" id="basic4" placeholder="Basic 4">
-                <input type="number" id="basic5" placeholder="Basic 5">
-                <input type="number" id="basic6" placeholder="Basic 6">
-                <input type="number" id="basic7" placeholder="Basic 7">
-                <input type="number" id="basic8" placeholder="Basic 8">
-                <input type="number" id="basic9" placeholder="Basic 9">
+                <input type="number" id="nursery" placeholder="Nursery" inputmode="numeric" oninput="validateInput(this)">
+                <input type="number" id="kg1" placeholder="KG 1" inputmode="numeric" oninput="validateInput(this)">
+                <input type="number" id="kg2" placeholder="KG 2" inputmode="numeric" oninput="validateInput(this)">
+                <input type="number" id="basic1" placeholder="Basic 1" inputmode="numeric" oninput="validateInput(this)">
+                <input type="number" id="basic2" placeholder="Basic 2" inputmode="numeric" oninput="validateInput(this)">
+                <input type="number" id="basic3" placeholder="Basic 3" inputmode="numeric" oninput="validateInput(this)">
+                <input type="number" id="basic4" placeholder="Basic 4" inputmode="numeric" oninput="validateInput(this)">
+                <input type="number" id="basic5" placeholder="Basic 5" inputmode="numeric" oninput="validateInput(this)">
+                <input type="number" id="basic6" placeholder="Basic 6" inputmode="numeric" oninput="validateInput(this)">
+                <input type="number" id="basic7" placeholder="Basic 7" inputmode="numeric" oninput="validateInput(this)">
+                <input type="number" id="basic8" placeholder="Basic 8" inputmode="numeric" oninput="validateInput(this)">
+                <input type="number" id="basic9" placeholder="Basic 9" inputmode="numeric" oninput="validateInput(this)">
             </div>
             <button class="login_btn" onclick="confirmRegistration()">Register</button>
         </div>
@@ -122,6 +142,7 @@
             <button class="cancel_btn" onclick="resetForm()">Cancel</button>
         </div>
     </div>
+
 
     <script>
         function validateInput(input) {
