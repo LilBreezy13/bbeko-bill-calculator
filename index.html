@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <link href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="./Css/bootstrap.min.css">
+    <link rel="stylesheet" href="./registration.css">
+    <title>Best Brain</title>
+    <link rel="icon" type="image/x-icon" href="./Assets/favicon.ico">
+    <script src="https://code.jquery.com/jquery-3.3.1.js"></script>
+    <script src="https://kit.fontawesome.com/64d58efce2.js" crossorigin="anonymous"></script>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: "Poppins", sans-serif;
+            background-color: #f3f7f7;
+            overflow-y: auto;
+        }
+
+        .card {
+            width: 90%;
+            max-width: 400px;
+            background-color: #000aba;
+            color: white;
+            padding: 40px;
+            border-radius: 20px;
+            box-sizing: border-box;
+            position: relative;
+        }
+
+        .form input, .form select {
+            padding: 12px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            border: 1px solid #003C96;
+            width: 100%;
+            font-weight: bold;
+        }
+
+        .login_btn, .confirm_btn, .cancel_btn {
+            font-size: 20px;
+            color: white;
+            border-radius: 15px;
+            border: none;
+            background: linear-gradient(-90deg, #d31005, #d31005);
+            padding: 12px;
+            margin-top: 15px;
+            width: 100%;
+            cursor: pointer;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        .summary {
+            background: white;
+            color: black;
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 15px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="card">
+        <h2>Add Your School</h2>
+        <div class="form">
+            <input type="text" id="schoolName" placeholder="School Name">
+            <select id="registrationType" onchange="showForm()">
+                <option value="">Exam Types</option>
+                <option value="mock">Mock Registration</option>
+                <option value="terminal">Terminal Registration</option>
+            </select>
+
+            <div id="terminalCandidates" style="display:none;">
+                <input type="tel" id="nursery" placeholder="Nursery">
+                <input type="tel" id="kg1" placeholder="KG 1">
+                <input type="tel" id="kg2" placeholder="KG 2">
+                <input type="tel" id="basic1" placeholder="Basic 1">
+                <input type="tel" id="basic2" placeholder="Basic 2">
+                <input type="tel" id="basic3" placeholder="Basic 3">
+                <input type="tel" id="basic4" placeholder="Basic 4">
+                <input type="tel" id="basic5" placeholder="Basic 5">
+                <input type="tel" id="basic6" placeholder="Basic 6">
+                <input type="tel" id="basic7" placeholder="Basic 7">
+                <input type="tel" id="basic8" placeholder="Basic 8">
+                <input type="tel" id="basic9" placeholder="Basic 9">
+            </div>
+
+            <div class="summary" id="summarySection" style="display:none;"></div>
+
+            <button class="login_btn" onclick="calculateBill()">Register</button>
+            <button class="cancel_btn" onclick="resetForm()">Cancel</button>
+        </div>
+    </div>
+
+<script>
+    function showForm() {
+        document.getElementById("terminalCandidates").style.display =
+            document.getElementById("registrationType").value === "terminal" ? "block" : "none";
+    }
+
+    function calculateBill() {
+        const schoolName = document.getElementById("schoolName").value.trim();
+        if (!schoolName) {
+            alert("Please enter the school name.");
+            return;
+        }
+
+        let totalBill = 20;
+        let summaryText = `<b>School:</b> ${schoolName}<br>`;
+        const pricing = {"nursery": 8, "kg1": 8, "kg2": 8, "basic1": 9, "basic2": 9, "basic3": 9, "basic4": 10, "basic5": 10, "basic6": 10, "basic7": 15, "basic8": 15, "basic9": 20};
+        let groups = {"Pre-School": 0, "Lower Primary": 0, "Upper Primary": 0, "Basic 7 & 8": 0, "Basic 9": 0};
+
+        Object.keys(pricing).forEach(id => {
+            let count = parseInt(document.getElementById(id).value) || 0;
+            totalBill += count * pricing[id];
+
+            if (id === "nursery" || id === "kg1" || id === "kg2") groups["Pre-School"] += count * pricing[id];
+            else if (id === "basic1" || id === "basic2" || id === "basic3") groups["Lower Primary"] += count * pricing[id];
+            else if (id === "basic4" || id === "basic5" || id === "basic6") groups["Upper Primary"] += count * pricing[id];
+            else if (id === "basic7" || id === "basic8") groups["Basic 7 & 8"] += count * pricing[id];
+            else if (id === "basic9") groups["Basic 9"] += count * pricing[id];
+        });
+
+        Object.keys(groups).forEach(group => {
+            if (groups[group] > 0) summaryText += `<b>${group}:</b> ${groups[group]} GHS<br>`;
+        });
+
+        summaryText += `<b>Delivery Fee:</b> 20 GHS<br><b>Overall Total:</b> ${totalBill} GHS`;
+        document.getElementById("summarySection").innerHTML = summaryText;
+        document.getElementById("summarySection").style.display = "block";
+    }
+
+    function resetForm() {
+        document.querySelectorAll("input[type='tel']").forEach(input => input.value = "");
+        document.getElementById("summarySection").style.display = "none";
+    }
+</script>
+</body>
+</html>
