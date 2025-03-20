@@ -25,7 +25,7 @@
 
         .card {
             width: 90%;
-            max-width: 400px;
+            max-width: 350px;
             background-color: #000aba;
             color: white;
             display: flex;
@@ -45,8 +45,8 @@
         }
 
         .form input, .form select {
-            padding: 12px;
-            margin-bottom: 10px;
+            padding: 11px;
+            margin-bottom: 8px;
             border-radius: 5px;
             border: 1px solid #003C96;
             color: #5b0101;
@@ -59,7 +59,7 @@
         }
 
         .form input::placeholder {
-            color: rgba(0, 60, 150, 0.5);
+            color: rgba(3, 15, 34, 0.5);
             font-weight: normal;
         }
 
@@ -109,6 +109,32 @@
             font-size: 80%;
             font-weight: normal;
         }
+
+        .login_btn:hover {
+    background: linear-gradient(-90deg, #b30b04, #ff1100);
+    transition: 0.3s;
+}
+
+#whatsappBtn {
+    background: #25D366; /* WhatsApp Green */
+}
+
+#smsBtn {
+    background: #007AFF; /* iOS Blue */
+}
+
+#whatsappBtn, #smsBtn {
+    margin-top: 10px;
+    text-align: center;
+    font-weight: bold;
+    border: none;
+    border-radius: 15px;
+    padding: 12px;
+    cursor: pointer;
+    color: white;
+}
+
+
     </style>
 </head>
 <body>
@@ -140,7 +166,10 @@
             <h4>Summary</h4>
             <p id="summaryText"></p>
             <button class="cancel_btn" onclick="resetForm()">Cancel</button>
+            <button id="whatsappBtn" class="login_btn">Send via WhatsApp</button>
+            <button id="smsBtn" class="login_btn">Send via SMS</button>
         </div>
+        
     </div>
 
 
@@ -153,43 +182,81 @@
         }
 
         function confirmRegistration() {
-            let inputs = document.querySelectorAll("#terminalCandidates input");
-            let hasValue = false;
-            let total = 20;
-            let summary = "";
+    let inputs = document.querySelectorAll("#terminalCandidates input");
+    let hasValue = false;
+    let total = 20;
+    let summary = "";
+    
+    inputs.forEach(input => {
+        let value = parseInt(input.value) || 0;
+        if (value > 0) hasValue = true;
+    });
 
-            inputs.forEach(input => {
-                let value = parseInt(input.value) || 0;
-                if (value > 0) hasValue = true;
-            });
+    if (!hasValue) {
+        alert("Please enter at least one numeric value.");
+        return;
+    }
 
-            if (!hasValue) {
-                alert("Please enter at least one numeric value.");
-                return;
-            }
+    let schoolName = document.getElementById("schoolName").value.trim();
+    if (schoolName === "") {
+        alert("Please enter a school name.");
+        return;
+    }
 
-            let schoolName = document.getElementById("schoolName").value.trim();
-            if (schoolName === "") {
-                alert("Please enter a school name.");
-                return;
-            }
+    let categories = {
+        "Pre-School": (parseInt(document.getElementById("nursery").value) || 0) * 8 +
+                      (parseInt(document.getElementById("kg1").value) || 0) * 8 +
+                      (parseInt(document.getElementById("kg2").value) || 0) * 8,
 
-            let categories = {
-                "Pre-School": (parseInt(document.getElementById("nursery").value) || 0) * 8 + (parseInt(document.getElementById("kg1").value) || 0) * 8 + (parseInt(document.getElementById("kg2").value) || 0) * 8,
-                "Lower Primary": (parseInt(document.getElementById("basic1").value) || 0) * 9 + (parseInt(document.getElementById("basic2").value) || 0) * 9 + (parseInt(document.getElementById("basic3").value) || 0) * 9,
-                "Upper Primary": (parseInt(document.getElementById("basic4").value) || 0) * 10 + (parseInt(document.getElementById("basic5").value) || 0) * 10 + (parseInt(document.getElementById("basic6").value) || 0) * 10,
-                "Basic 7-8": (parseInt(document.getElementById("basic7").value) || 0) * 15 + (parseInt(document.getElementById("basic8").value) || 0) * 15,
-                "Basic 9 - Mock": (parseInt(document.getElementById("basic9").value) || 0) * 20
-            };
+        "Lower Primary": (parseInt(document.getElementById("basic1").value) || 0) * 9 +
+                         (parseInt(document.getElementById("basic2").value) || 0) * 9 +
+                         (parseInt(document.getElementById("basic3").value) || 0) * 9,
 
-            for (let key in categories) {
-                summary += `${key}: ${categories[key]} GHS<br>`;
-                total += categories[key];
-            }
+        "Upper Primary": (parseInt(document.getElementById("basic4").value) || 0) * 10 +
+                         (parseInt(document.getElementById("basic5").value) || 0) * 10 +
+                         (parseInt(document.getElementById("basic6").value) || 0) * 10,
 
-            document.getElementById("summaryText").innerHTML = summary + `<br><b>Total: ${total} GHS</b>`;
+        "Basic 7-8": (parseInt(document.getElementById("basic7").value) || 0) * 15 +
+                     (parseInt(document.getElementById("basic8").value) || 0) * 15,
+
+        "Basic 9 - Mock": (parseInt(document.getElementById("basic9").value) || 0) * 20
+    };
+
+    for (let key in categories) {
+        summary += `${key}: ${categories[key]} GHS<br>`;
+        total += categories[key];
+    }
+
+    let finalMessage = `School Name: ${schoolName}\n\n`;
+    for (let key in categories) {
+        finalMessage += `${key}: ${categories[key]} GHS\n`;
+    }
+    finalMessage += `\nTotal Bill: ${total} GHS`;
+
+    document.getElementById("summaryText").innerHTML = summary + `<br><b>Total Bill: ${total} GHS</b>`;
+    document.getElementById("summarySection").style.display = "block";
+
+    // Store message for WhatsApp & SMS
+    document.getElementById("whatsappBtn").setAttribute("onclick", `sendWhatsApp('${encodeURIComponent(finalMessage)}')`);
+    document.getElementById("smsBtn").setAttribute("onclick", `sendSMS('${encodeURIComponent(finalMessage)}')`);
+}
+
+// Send WhatsApp Message
+function sendWhatsApp(message) {
+    let whatsappURL = `https://api.whatsapp.com/send?text=${message}`;
+    window.open(whatsappURL, '_blank');
+}
+
+// Send SMS Message
+function sendSMS(message) {
+    let smsURL = `sms:?body=${message}`;
+    window.open(smsURL, '_blank');
+}
+
+
+            document.getElementById("summaryText").innerHTML = summary + `<br><b>Total Bill: ${total} GHS</b>`;
             document.getElementById("summarySection").style.display = "block";
-        }
+        
 
         function resetForm() {
         location.reload();
