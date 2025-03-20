@@ -184,9 +184,9 @@
         function confirmRegistration() {
     let inputs = document.querySelectorAll("#terminalCandidates input");
     let hasValue = false;
-    let total = 20;
+    let total = 20; // Start with the delivery fee
     let summary = "";
-    
+
     inputs.forEach(input => {
         let value = parseInt(input.value) || 0;
         if (value > 0) hasValue = true;
@@ -227,31 +227,28 @@
         total += categories[key];
     }
 
-    let finalMessage = `School Name: ${schoolName}\n\n`;
-    for (let key in categories) {
-        finalMessage += `${key}: ${categories[key]} GHS\n`;
-    }
-    finalMessage += `\nTotal Bill: ${total} GHS`;
+    // Fixed default message format
+    let defaultMessage = `Hello,\n\nThe total registration bill for *${schoolName}* is *${total} GHS*.\n\nPlease kindly make payment through this line below.\n\n 0247448883 Best Brain Examinations Konsortium or Bacon Atsu Amengor\n\nThank you!`;
 
     document.getElementById("summaryText").innerHTML = summary + `<br><b>Total Bill: ${total} GHS</b>`;
+    document.getElementById("customMessage").value = defaultMessage; // Fill the textarea with default message
     document.getElementById("summarySection").style.display = "block";
-
-    // Store message for WhatsApp & SMS
-    document.getElementById("whatsappBtn").setAttribute("onclick", `sendWhatsApp('${encodeURIComponent(finalMessage)}')`);
-    document.getElementById("smsBtn").setAttribute("onclick", `sendSMS('${encodeURIComponent(finalMessage)}')`);
 }
 
 // Send WhatsApp Message
-function sendWhatsApp(message) {
-    let whatsappURL = `https://api.whatsapp.com/send?text=${message}`;
+function sendWhatsApp() {
+    let message = document.getElementById("customMessage").value;
+    let whatsappURL = `https://api.whatsapp.com/send?text=${encodeURIComponent(message)}`;
     window.open(whatsappURL, '_blank');
 }
 
 // Send SMS Message
-function sendSMS(message) {
-    let smsURL = `sms:?body=${message}`;
+function sendSMS() {
+    let message = document.getElementById("customMessage").value;
+    let smsURL = `sms:?body=${encodeURIComponent(message)}`;
     window.open(smsURL, '_blank');
 }
+
 
 
             document.getElementById("summaryText").innerHTML = summary + `<br><b>Total Bill: ${total} GHS</b>`;
