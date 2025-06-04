@@ -196,7 +196,7 @@
         alert("Please enter at least one numeric value.");
         return;
     }
-
+ 
     let schoolName = document.getElementById("schoolName").value.trim();
     if (schoolName === "") {
         alert("Please enter a school name.");
@@ -228,10 +228,10 @@
     }
 
     let finalMessage = `School Name: ${schoolName}\n\n`;
-    for (let key in categories) {
+    for (let key in categories) {  
         finalMessage += `${key}: ${categories[key]} GHS\n`;
     }
-    finalMessage += `\nTotal Bill: ${total} GHS`;
+    finalMessage += `\nTotal Bill: ${total} GHS \n Kindly pay through this line 0247448883`;
 
     document.getElementById("summaryText").innerHTML = summary + `<br><b>Total Bill: ${total} GHS</b>`;
     document.getElementById("summarySection").style.display = "block";
@@ -241,7 +241,7 @@
     document.getElementById("smsBtn").setAttribute("onclick", `sendSMS('${encodeURIComponent(finalMessage)}')`);
 }
 
-// Send WhatsApp Message
+// Send WhatsApp Message 
 function sendWhatsApp(message) {
     let whatsappURL = `https://api.whatsapp.com/send?text=${message}`;
     window.open(whatsappURL, '_blank');
