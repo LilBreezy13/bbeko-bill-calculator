@@ -223,17 +223,17 @@
     };
 
     for (let key in categories) {
-        summary += `${key}: $GHS{categories[key]} <br>`;
+        summary += `${key}: GHS${categories[key]} <br>`;
         total += categories[key];
     }
 
     let finalMessage = `School Name: ${schoolName}\n\n`;
     for (let key in categories) {  
-        finalMessage += `${key}: $GHS{categories[key]} \n`;
+        finalMessage += `${key}: GHS${categories[key]} \n`;
     }
-    finalMessage += `\nTotal Bill: $GHS{total}\nKindly pay through this Momo lines\n0247448883(Bacon Atsu Amengor)\n0248726958(Best Brain Examinations Konsortium)`;
+    finalMessage += `\nTotal Bill: GHS${total}\nKindly pay through this Momo lines\n0247448883(Bacon Atsu Amengor)\n0248726958(Best Brain Examinations Konsortium)`;
 
-    document.getElementById("summaryText").innerHTML = summary + `<br><b>Total Bill: $GHS{total} </b>`;
+    document.getElementById("summaryText").innerHTML = summary + `<br><b>Total Bill:GHS ${total}</b>`;
     document.getElementById("summarySection").style.display = "block";
 
     // Store message for WhatsApp & SMS
