@@ -227,6 +227,9 @@
         total += categories[key];
     }
 
+    // Add delivery fee explicitly in summary
+summary += `Delivery Fee: GHS 20 <br>`;
+
     let finalMessage = `School Name: ${schoolName}\n\n`;
     for (let key in categories) {  
         finalMessage += `${key}: GHS ${categories[key]} \n`;
