@@ -524,6 +524,84 @@ history.unshift({
 }
 
 
+// Handle navigation history for mobile back button
+window.onpopstate = function(event) {
+    if (document.getElementById("historyDetailPage").style.display === "block") {
+        // On detail page → go back to history list
+        closeHistoryDetail(false);
+    } else if (document.getElementById("historyPage").style.display === "block") {
+        // On history page → go back to main card
+        closeHistoryPage(false);
+    } else {
+        // Already on main form/summary → allow normal back (exit app/close tab)
+        history.go(-1);
+    }
+};
+
+// Push custom states only for history and detail
+function openHistoryPage() {
+    let historyData = JSON.parse(localStorage.getItem("calcHistory")) || [];
+    let list = document.getElementById("historyList");
+    list.innerHTML = "";
+
+    if (historyData.length === 0) {
+        list.innerHTML = "<li>No history found.</li>";
+    } else {
+        historyData.forEach((item, index) => {
+            let li = document.createElement("li");
+            li.innerHTML = `<b>${item.school}</b>
+                            Total Bill: GHS ${fmt.format(item.total)}<br>
+                            <small>${item.date}</small><br>
+                            <button onclick="viewHistory(${index})" style="margin-top:6px; padding:6px 10px; background:#000aba; color:white; border:none; border-radius:8px; cursor:pointer;">View</button>`;
+            list.appendChild(li);
+        });
+    }
+
+    document.querySelector(".card").style.display = "none";
+    document.getElementById("historyPage").style.display = "block";
+
+    history.pushState({ page: "history" }, "", "");
+}
+
+function closeHistoryPage(fromButton = true) {
+    document.querySelector(".card").style.display = "flex";
+    document.getElementById("historyPage").style.display = "none";
+
+    if (fromButton) history.back(); // simulate back if button clicked
+}
+
+function viewHistory(index) {
+    let historyData = JSON.parse(localStorage.getItem("calcHistory")) || [];
+    let item = historyData[index];
+
+    document.getElementById("detailSchool").innerText = item.school;
+    document.getElementById("detailDate").innerText = item.date;
+
+    let breakdownHTML = "";
+    for (let key in item.breakdown) {
+        if (item.breakdown[key] > 0) {
+            breakdownHTML += `<p><b>${key}</b>: GHS ${fmt.format(item.breakdown[key])}</p>`;
+        }
+    }
+    breakdownHTML += `<p><b>Delivery Fee</b>: GHS ${fmt.format(20)}</p>`;
+    breakdownHTML += `<p><b>Total Bill</b>: GHS ${fmt.format(item.total)}</p>`;
+
+    document.getElementById("detailBreakdown").innerHTML = breakdownHTML;
+
+    document.getElementById("historyPage").style.display = "none";
+    document.getElementById("historyDetailPage").style.display = "block";
+
+    history.pushState({ page: "detail" }, "", "");
+}
+
+function closeHistoryDetail(fromButton = true) {
+    document.getElementById("historyDetailPage").style.display = "none";
+    document.getElementById("historyPage").style.display = "block";
+
+    if (fromButton) history.back(); // simulate back if button clicked
+}
+
+
 
 
     </script>
