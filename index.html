@@ -179,7 +179,7 @@
 
 #historyTitle {
     text-align: center;
-    font-size: 22px;
+    font-size: 19px;
     font-weight: bold;
     color: #000aba;
     margin: 0 0 20px;
@@ -309,7 +309,7 @@
 <div id="historyPage" style="display:none;">
   <div id="historyInner">
     <button id="closeHistory" onclick="closeHistoryPage()" aria-label="Close">&larr; Back</button>
-    <h3 id="historyTitle">Last 5 Calculations</h3>
+    <h5 id="historyTitle">Last 5 Calculations</h5>
     <ul id="historyList"></ul>
   </div>
 </div>
@@ -506,8 +506,23 @@ history.unshift({
     }
 
     function resetForm() {
-        location.reload();
-    }
+    // Clear inputs
+    document.getElementById("schoolName").value = "";
+    let inputs = document.querySelectorAll("#terminalCandidates input");
+    inputs.forEach(input => input.value = "");
+
+    // Hide summary, show form again
+    document.getElementById("summarySection").style.display = "none";
+    document.querySelector(".form").style.display = "flex";
+
+    // Reset history link states
+    document.getElementById("historyLinkBefore").style.display = "block";
+    document.getElementById("historyLinkAfter").style.display = "none";
+
+    // Hide candidates input section until exam type is picked again
+    document.getElementById("terminalCandidates").style.display = "none";
+}
+
 
 
 
