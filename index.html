@@ -308,7 +308,8 @@
 <!-- History Full Page -->
 <div id="historyPage" style="display:none;">
   <div id="historyInner">
-    <button id="closeHistory" onclick="closeHistoryPage()" aria-label="Close">&larr; Back</button>
+  <button id="closeHistory" onclick="closeHistoryPage(true)" aria-label="Close">&larr; Back</button>
+
     <h5 id="historyTitle">Last 5 Calculations</h5>
     <ul id="historyList"></ul>
   </div>
@@ -317,7 +318,7 @@
 <!-- Single History Detail Page -->
 <div id="historyDetailPage" style="display:none;">
   <div id="historyDetailInner">
-    <button onclick="closeHistoryDetail()" style="background:none; border:none; font-size:16px; font-weight:600; color:red; cursor:pointer; margin-bottom:15px;">&larr; Back</button>
+   <button onclick="closeHistoryDetail()" style="background:none; border:none; font-size:16px; font-weight:600; color:red; cursor:pointer; margin-bottom:15px;">&larr; Back</button>
     <h3 id="detailSchool"></h3>
     <p id="detailDate" style="color:#666; font-size:13px;"></p>
     <div id="detailBreakdown"></div>
@@ -567,9 +568,11 @@ function closeHistoryPage(fromButton = true) {
     document.querySelector(".card").style.display = "flex";
     document.getElementById("historyPage").style.display = "none";
 
-    if (fromButton) history.back(); // simulate back if button clicked
+    if (fromButton) {
+        // User tapped app Back → do not touch browser history
+        return;
+    }
 }
-
 function viewHistory(index) {
     let historyData = JSON.parse(localStorage.getItem("calcHistory")) || [];
     let item = historyData[index];
@@ -598,9 +601,11 @@ function closeHistoryDetail(fromButton = true) {
     document.getElementById("historyDetailPage").style.display = "none";
     document.getElementById("historyPage").style.display = "block";
 
-    if (fromButton) history.back(); // simulate back if button clicked
+    if (fromButton) {
+        // User tapped app Back → do not touch browser history
+        return;
+    }
 }
-
 
 
 
