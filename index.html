@@ -215,6 +215,41 @@
 }
 
 
+/* History detail full page */
+#historyDetailPage {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: #f9fafc;
+    padding: 20px;
+    box-sizing: border-box;
+    z-index: 2000;
+    overflow-y: auto;
+}
+
+#historyDetailInner {
+    max-width: 500px;
+    margin: auto;
+    padding-bottom: 40px;
+}
+
+#detailBreakdown {
+    margin-top: 15px;
+}
+#detailBreakdown p {
+    background: #fff;
+    padding: 10px 12px;
+    margin-bottom: 8px;
+    border-radius: 10px;
+    border: 1px solid #e6e9ef;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+    font-size: 14px;
+}
+#detailBreakdown b {
+    color: #031f5c;
+}
+
+
 
 
 
@@ -270,12 +305,22 @@
 
 
 
- <!-- History Full Page -->
+<!-- History Full Page -->
 <div id="historyPage" style="display:none;">
   <div id="historyInner">
     <button id="closeHistory" onclick="closeHistoryPage()" aria-label="Close">&larr; Back</button>
     <h3 id="historyTitle">Last 5 Calculations</h3>
     <ul id="historyList"></ul>
+  </div>
+</div>
+
+<!-- Single History Detail Page -->
+<div id="historyDetailPage" style="display:none;">
+  <div id="historyDetailInner">
+    <button onclick="closeHistoryDetail()" style="background:none; border:none; font-size:16px; font-weight:600; color:red; cursor:pointer; margin-bottom:15px;">&larr; Back</button>
+    <h3 id="detailSchool"></h3>
+    <p id="detailDate" style="color:#666; font-size:13px;"></p>
+    <div id="detailBreakdown"></div>
   </div>
 </div>
 
@@ -285,7 +330,44 @@
 
 
 
+
+
     <script>
+
+function viewHistory(index) {
+    let history = JSON.parse(localStorage.getItem("calcHistory")) || [];
+    let item = history[index];
+
+    document.getElementById("detailSchool").innerText = item.school;
+    document.getElementById("detailDate").innerText = item.date;
+
+    let breakdownHTML = "";
+
+    // Only show categories with non-zero values
+    for (let key in item.breakdown) {
+        if (item.breakdown[key] > 0) {
+            breakdownHTML += `<p><b>${key}</b>: GHS ${fmt.format(item.breakdown[key])}</p>`;
+        }
+    }
+
+    // Delivery Fee is always shown
+    breakdownHTML += `<p><b>Delivery Fee</b>: GHS ${fmt.format(20)}</p>`;
+    breakdownHTML += `<p><b>Total Bill</b>: GHS ${fmt.format(item.total)}</p>`;
+
+    document.getElementById("detailBreakdown").innerHTML = breakdownHTML;
+
+    // Switch to detail page
+    document.getElementById("historyPage").style.display = "none";
+    document.getElementById("historyDetailPage").style.display = "block";
+}
+
+
+
+function closeHistoryDetail() {
+    document.getElementById("historyDetailPage").style.display = "none";
+    document.getElementById("historyPage").style.display = "block";
+}
+
 
     function validateInput(input) {
         input.value = input.value.replace(/[^0-9]/g, ''); // Remove non-numeric characters
@@ -366,13 +448,14 @@ document.getElementById("historyLinkBefore").style.display = "none";
 document.getElementById("historyLinkAfter").style.display = "block";
 
 
-        // Save last 5 history
-        let history = JSON.parse(localStorage.getItem("calcHistory")) || [];
-        history.unshift({
-            school: schoolName,
-            total: total,
-            date: new Date().toLocaleString()
-        });
+       // Save last 5 history (with full breakdown)
+let history = JSON.parse(localStorage.getItem("calcHistory")) || [];
+history.unshift({
+    school: schoolName,
+    total: total,
+    date: new Date().toLocaleString(),
+    breakdown: categories // store category details
+});
         if (history.length > 5) history.pop();
         localStorage.setItem("calcHistory", JSON.stringify(history));
 
@@ -394,25 +477,29 @@ document.getElementById("historyLinkAfter").style.display = "block";
     }
 
     // History overlay
-    function openHistoryPage() {
-        let history = JSON.parse(localStorage.getItem("calcHistory")) || [];
-        let list = document.getElementById("historyList");
-        list.innerHTML = "";
+ function openHistoryPage() {
+    let history = JSON.parse(localStorage.getItem("calcHistory")) || [];
+    let list = document.getElementById("historyList");
+    list.innerHTML = "";
 
-        if (history.length === 0) {
-            list.innerHTML = "<li>No history found.</li>";
-        } else {
-            history.forEach(item => {
-                let li = document.createElement("li");
-                li.innerHTML = `<b>${item.school}</b>
-                                Total Bill: GHS ${fmt.format(item.total)}<br>
-                                <small>${item.date}</small>`;
-                list.appendChild(li);
-            });
-        }
+    if (history.length === 0) {
+        list.innerHTML = "<li>No history found.</li>";
+    } else {
+        history.forEach((item, index) => {
+            let li = document.createElement("li");
+            li.innerHTML = `<b>${item.school}</b>
+                            Total Bill: GHS ${fmt.format(item.total)}<br>
+                            <small>${item.date}</small><br>
+                            <button onclick="viewHistory(${index})" style="margin-top:6px; padding:6px 10px; background:#000aba; color:white; border:none; border-radius:8px; cursor:pointer;">View</button>`;
+            list.appendChild(li);
+        });
+    }
 
         document.getElementById("historyPage").style.display = "block";
     }
+
+
+
 
     function closeHistoryPage() {
         document.getElementById("historyPage").style.display = "none";
