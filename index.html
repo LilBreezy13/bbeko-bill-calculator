@@ -135,6 +135,107 @@
 }
 
 
+/* Center the "Last 5 History" link */
+.history-link {
+    margin-top: 12px;
+    text-align: center;
+    width: 100%;
+}
+.history-link a {
+    color: red;        /* make it red */
+    font-weight: 600;  /* a bit bolder */
+    text-decoration: none;  /* remove underline */
+    cursor: pointer;
+}
+
+
+/* History overlay */
+#historyPage {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.4);
+    padding: 20px;
+    box-sizing: border-box;
+    z-index: 1000;
+}
+
+/* Inner container */
+#historyInner {
+    position: relative;
+    background: #ffffff;
+    width: 95%;
+    max-width: 420px;
+    height: 80vh; /* fixed height for scroll */
+    margin: auto;
+    top: 50%;
+    transform: translateY(-50%);
+    border-radius: 18px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+    padding: 20px 16px;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Close button */
+#closeHistory {
+    position: absolute;
+    top: 12px;
+    right: 14px;
+    background: transparent;
+    border: none;
+    font-size: 26px;
+    line-height: 1;
+    cursor: pointer;
+    color: #444;
+}
+
+/* Title */
+#historyTitle {
+    margin: 0;
+    text-align: center;
+    font-size: 20px;
+    font-weight: 700;
+    color: #000aba;
+}
+
+/* Scrollable list */
+#historyList {
+    list-style: none;
+    padding: 0;
+    margin: 20px 0 0;
+    flex: 1; /* take available space */
+    overflow-y: auto; /* vertical scroll */
+}
+
+/* Individual history item */
+#historyList li {
+    margin-bottom: 12px;
+    padding: 12px 14px;
+    background: #f9fafc;
+    border-radius: 12px;
+    border: 1px solid #e6e9ef;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+    font-size: 14px;
+}
+
+#historyList li b {
+    display: block;
+    font-size: 15px;
+    font-weight: 600;
+    color: #031f5c;
+    margin-bottom: 4px;
+}
+#historyList li small {
+    display: block;
+    margin-top: 6px;
+    font-size: 12px;
+    color: #666;
+}
+
+
+
+
     </style>
 </head>
 <body>
@@ -161,6 +262,10 @@
                 <input type="number" id="basic9" placeholder="Basic 9" inputmode="numeric" oninput="validateInput(this)">
             </div>
             <button class="login_btn" onclick="confirmRegistration()">Register</button>
+                 <div class="history-link">
+  <a onclick="openHistoryPage()">Last 5 History</a>
+</div>
+
         </div>
         <div id="summarySection" style="display:none;">
             <h4>Summary</h4>
@@ -168,105 +273,168 @@
             <button class="cancel_btn" onclick="resetForm()">Cancel</button>
             <button id="whatsappBtn" class="login_btn">Send via WhatsApp</button>
             <button id="smsBtn" class="login_btn">Send via SMS</button>
+           
+           <div class="history-link">
+  <a onclick="openHistoryPage()">Last 5 History</a>
+</div>
+
+            <!-- <p style="margin-top:10px; cursor:pointer; text-decoration:underline; color:#fff;" onclick="openHistoryPage()">Last 5 History</p> -->
         </div>
         
     </div>
 
 
+
+   <!-- History Overlay -->
+<div id="historyPage">
+  <div id="historyInner">
+    <button id="closeHistory" onclick="closeHistoryPage()" aria-label="Close">&times;</button>
+    <h3 id="historyTitle">Last 5 Calculations</h3>
+    <ul id="historyList"></ul>
+  </div>
+</div>
+
+
+
+
+
+
+
+
     <script>
-        function validateInput(input) {
-    input.value = input.value.replace(/[^0-9]/g, ''); // Remove non-numeric characters
-}
-        function showForm() {
-            document.getElementById("terminalCandidates").style.display = "block";
+
+    function validateInput(input) {
+        input.value = input.value.replace(/[^0-9]/g, ''); // Remove non-numeric characters
+    }
+
+    function showForm() {
+        document.getElementById("terminalCandidates").style.display = "block";
+    }
+
+    // Formatter for commas (1,000, 12,345, etc.)
+    const fmt = new Intl.NumberFormat('en-US');
+
+    function confirmRegistration() {
+        let inputs = document.querySelectorAll("#terminalCandidates input");
+        let hasValue = false;
+        let total = 20; // delivery fee included
+        let summary = "";
+
+        inputs.forEach(input => {
+            let value = parseInt(input.value) || 0;
+            if (value > 0) hasValue = true;
+        });
+
+        if (!hasValue) {
+            alert("Please enter at least one numeric value.");
+            return;
         }
 
-        function confirmRegistration() {
-    let inputs = document.querySelectorAll("#terminalCandidates input");
-    let hasValue = false;
-    let total = 20;
-    let summary = "";
-    
-    inputs.forEach(input => {
-        let value = parseInt(input.value) || 0;
-        if (value > 0) hasValue = true;
-    });
+        let schoolName = document.getElementById("schoolName").value.trim();
+        if (schoolName === "") {
+            alert("Please enter a school name.");
+            return;
+        }
 
-    if (!hasValue) {
-        alert("Please enter at least one numeric value.");
-        return;
+        let categories = {
+            "Pre-School": (parseInt(document.getElementById("nursery").value) || 0) * 8 +
+                          (parseInt(document.getElementById("kg1").value) || 0) * 8 +
+                          (parseInt(document.getElementById("kg2").value) || 0) * 8,
+
+            "Lower Primary": (parseInt(document.getElementById("basic1").value) || 0) * 9 +
+                             (parseInt(document.getElementById("basic2").value) || 0) * 9 +
+                             (parseInt(document.getElementById("basic3").value) || 0) * 9,
+
+            "Upper Primary": (parseInt(document.getElementById("basic4").value) || 0) * 10 +
+                             (parseInt(document.getElementById("basic5").value) || 0) * 10 +
+                             (parseInt(document.getElementById("basic6").value) || 0) * 10,
+
+            "Basic 7-8": (parseInt(document.getElementById("basic7").value) || 0) * 15 +
+                         (parseInt(document.getElementById("basic8").value) || 0) * 15,
+
+            "Basic 9 - Mock": (parseInt(document.getElementById("basic9").value) || 0) * 20
+        };
+
+        for (let key in categories) {
+            summary += `${key}: GHS ${fmt.format(categories[key])} <br>`;
+            total += categories[key];
+        }
+
+        summary += `Delivery Fee: GHS ${fmt.format(20)} <br>`;
+
+        let finalMessage = `School Name: ${schoolName}\n\n`;
+        for (let key in categories) {
+            finalMessage += `${key}: GHS ${fmt.format(categories[key])} \n`;
+        }
+        finalMessage += `Delivery Fee: GHS ${fmt.format(20)} \n`;
+        finalMessage += `\nTotal Bill: GHS ${fmt.format(total)}
+\nKindly pay through any of the momo lines
+0247448883(Bacon Atsu Amengor)
+0248726958(Best Brain Examinations Konsortium) 
+\nNB: Please use the name of your school as reference when making payments and send us a screenshot for confirmation.` ;
+
+        // Update summary on page
+        document.getElementById("summaryText").innerHTML = summary + `<br><b>Total Bill: GHS ${fmt.format(total)}</b>`;
+        document.getElementById("summarySection").style.display = "block";
+
+        // Save last 5 history
+        let history = JSON.parse(localStorage.getItem("calcHistory")) || [];
+        history.unshift({
+            school: schoolName,
+            total: total,
+            date: new Date().toLocaleString()
+        });
+        if (history.length > 5) history.pop();
+        localStorage.setItem("calcHistory", JSON.stringify(history));
+
+        // Set sharing
+        document.getElementById("whatsappBtn").setAttribute("onclick", `sendWhatsApp('${encodeURIComponent(finalMessage)}')`);
+        document.getElementById("smsBtn").setAttribute("onclick", `sendSMS('${encodeURIComponent(finalMessage)}')`);
     }
- 
-    let schoolName = document.getElementById("schoolName").value.trim();
-    if (schoolName === "") {
-        alert("Please enter a school name.");
-        return;
+
+    // WhatsApp
+    function sendWhatsApp(message) {
+        let whatsappURL = `https://api.whatsapp.com/send?text=${message}`;
+        window.open(whatsappURL, '_blank');
     }
 
-    let categories = {
-        "Pre-School": (parseInt(document.getElementById("nursery").value) || 0) * 8 +
-                      (parseInt(document.getElementById("kg1").value) || 0) * 8 +
-                      (parseInt(document.getElementById("kg2").value) || 0) * 8,
-
-        "Lower Primary": (parseInt(document.getElementById("basic1").value) || 0) * 9 +
-                         (parseInt(document.getElementById("basic2").value) || 0) * 9 +
-                         (parseInt(document.getElementById("basic3").value) || 0) * 9,
-
-        "Upper Primary": (parseInt(document.getElementById("basic4").value) || 0) * 10 +
-                         (parseInt(document.getElementById("basic5").value) || 0) * 10 +
-                         (parseInt(document.getElementById("basic6").value) || 0) * 10,
-
-        "Basic 7-8": (parseInt(document.getElementById("basic7").value) || 0) * 15 +
-                     (parseInt(document.getElementById("basic8").value) || 0) * 15,
-
-        "Basic 9 - Mock" : (parseInt(document.getElementById("basic9").value) || 0) * 20
-    };
-
-    for (let key in categories) {
-        summary += `${key}: GHS ${categories[key]} <br>`;
-        total += categories[key];
+    // SMS
+    function sendSMS(message) {
+        let smsURL = `sms:?body=${message}`;
+        window.open(smsURL, '_blank');
     }
 
-    // Add delivery fee explicitly in summary
-summary += `Delivery Fee: GHS 20 <br>`;
+    // History overlay
+    function openHistoryPage() {
+        let history = JSON.parse(localStorage.getItem("calcHistory")) || [];
+        let list = document.getElementById("historyList");
+        list.innerHTML = "";
 
-    let finalMessage = `School Name: ${schoolName}\n\n`;
-    for (let key in categories) {  
-        finalMessage += `${key}: GHS ${categories[key]} \n`;
+        if (history.length === 0) {
+            list.innerHTML = "<li>No history found.</li>";
+        } else {
+            history.forEach(item => {
+                let li = document.createElement("li");
+                li.innerHTML = `<b>${item.school}</b>
+                                Total Bill: GHS ${fmt.format(item.total)}<br>
+                                <small>${item.date}</small>`;
+                list.appendChild(li);
+            });
+        }
+
+        document.getElementById("historyPage").style.display = "block";
     }
-    finalMessage += `Delivery Fee: GHS 20 \n`;
-    finalMessage += `\nTotal Bill: GHS ${total}
-    \nKindly pay through any of the momo lines\n0247448883(Bacon Atsu Amengor)\n0248726958(Best Brain Examinations Konsortium) 
-    \nNB: Please use the name of your school as reference when making payments and send us a screenshot for confirmation.` ;
 
-    document.getElementById("summaryText").innerHTML = summary + `<br><b>Total Bill: GHS ${total}</b>`;
-    document.getElementById("summarySection").style.display = "block";
+    function closeHistoryPage() {
+        document.getElementById("historyPage").style.display = "none";
+    }
 
-    // Store message for WhatsApp & SMS
-    document.getElementById("whatsappBtn").setAttribute("onclick", `sendWhatsApp('${encodeURIComponent(finalMessage)}')`);
-    document.getElementById("smsBtn").setAttribute("onclick", `sendSMS('${encodeURIComponent(finalMessage)}')`);
-}
-
-// Send WhatsApp Message 
-function sendWhatsApp(message) {
-    let whatsappURL = `https://api.whatsapp.com/send?text=${message}`;
-    window.open(whatsappURL, '_blank');
-}
-
-// Send SMS Message
-function sendSMS(message) {
-    let smsURL = `sms:?body=${message}`;
-    window.open(smsURL, '_blank');
-}
-
-
-            document.getElementById("summaryText").innerHTML = summary + `<br><b>Total Bill: ${total} GHS</b>`;
-            document.getElementById("summarySection").style.display = "block";
-        
-
-        function resetForm() {
+    function resetForm() {
         location.reload();
     }
+
+
+
     </script>
 </body>
 </html>
