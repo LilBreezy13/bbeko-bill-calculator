@@ -142,81 +142,62 @@
     width: 100%;
 }
 .history-link a {
-    color: red;        /* make it red */
-    font-weight: 600;  /* a bit bolder */
-    text-decoration: none;  /* remove underline */
+    color: red;
+    font-weight: 600;
+    text-decoration: none; /* no underline */
     cursor: pointer;
 }
 
 
-/* History overlay */
+/* Full Page History */
 #historyPage {
     display: none;
     position: fixed;
     inset: 0;
-    background: rgba(0,0,0,0.4);
+    background: #f9fafc;
     padding: 20px;
     box-sizing: border-box;
     z-index: 1000;
+    overflow-y: auto; /* allow scroll on mobile */
 }
 
-/* Inner container */
 #historyInner {
-    position: relative;
-    background: #ffffff;
-    width: 95%;
-    max-width: 420px;
-    height: 80vh; /* fixed height for scroll */
+    max-width: 500px;
     margin: auto;
-    top: 50%;
-    transform: translateY(-50%);
-    border-radius: 18px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.25);
-    padding: 20px 16px;
-    display: flex;
-    flex-direction: column;
+    padding-bottom: 40px;
 }
 
-/* Close button */
 #closeHistory {
-    position: absolute;
-    top: 12px;
-    right: 14px;
-    background: transparent;
+    background: none;
     border: none;
-    font-size: 26px;
-    line-height: 1;
+    font-size: 16px;
+    font-weight: 600;
+    color: red;
     cursor: pointer;
-    color: #444;
+    margin-bottom: 20px;
 }
 
-/* Title */
 #historyTitle {
-    margin: 0;
     text-align: center;
-    font-size: 20px;
-    font-weight: 700;
+    font-size: 22px;
+    font-weight: bold;
     color: #000aba;
+    margin: 0 0 20px;
 }
 
-/* Scrollable list */
 #historyList {
     list-style: none;
     padding: 0;
-    margin: 20px 0 0;
-    flex: 1; /* take available space */
-    overflow-y: auto; /* vertical scroll */
+    margin: 0;
 }
 
-/* Individual history item */
 #historyList li {
     margin-bottom: 12px;
-    padding: 12px 14px;
-    background: #f9fafc;
+    padding: 14px;
+    background: #ffffff;
     border-radius: 12px;
     border: 1px solid #e6e9ef;
     box-shadow: 0 2px 6px rgba(0,0,0,0.05);
-    font-size: 14px;
 }
 
 #historyList li b {
@@ -224,14 +205,15 @@
     font-size: 15px;
     font-weight: 600;
     color: #031f5c;
-    margin-bottom: 4px;
 }
+
 #historyList li small {
     display: block;
     margin-top: 6px;
     font-size: 12px;
     color: #666;
 }
+
 
 
 
@@ -262,9 +244,12 @@
                 <input type="number" id="basic9" placeholder="Basic 9" inputmode="numeric" oninput="validateInput(this)">
             </div>
             <button class="login_btn" onclick="confirmRegistration()">Register</button>
-                 <div class="history-link">
+          
+
+ <div id="historyLinkBefore" class="history-link">
   <a onclick="openHistoryPage()">Last 5 History</a>
 </div>
+
 
         </div>
         <div id="summarySection" style="display:none;">
@@ -274,26 +259,25 @@
             <button id="whatsappBtn" class="login_btn">Send via WhatsApp</button>
             <button id="smsBtn" class="login_btn">Send via SMS</button>
            
-           <div class="history-link">
+         <div id="historyLinkAfter" class="history-link" style="display:none;">
   <a onclick="openHistoryPage()">Last 5 History</a>
 </div>
 
-            <!-- <p style="margin-top:10px; cursor:pointer; text-decoration:underline; color:#fff;" onclick="openHistoryPage()">Last 5 History</p> -->
+         
         </div>
         
     </div>
 
 
 
-   <!-- History Overlay -->
-<div id="historyPage">
+ <!-- History Full Page -->
+<div id="historyPage" style="display:none;">
   <div id="historyInner">
-    <button id="closeHistory" onclick="closeHistoryPage()" aria-label="Close">&times;</button>
+    <button id="closeHistory" onclick="closeHistoryPage()" aria-label="Close">&larr; Back</button>
     <h3 id="historyTitle">Last 5 Calculations</h3>
     <ul id="historyList"></ul>
   </div>
 </div>
-
 
 
 
@@ -376,6 +360,11 @@
         // Update summary on page
         document.getElementById("summaryText").innerHTML = summary + `<br><b>Total Bill: GHS ${fmt.format(total)}</b>`;
         document.getElementById("summarySection").style.display = "block";
+
+        // Hide history link on form page, show the one in summary
+document.getElementById("historyLinkBefore").style.display = "none";
+document.getElementById("historyLinkAfter").style.display = "block";
+
 
         // Save last 5 history
         let history = JSON.parse(localStorage.getItem("calcHistory")) || [];
