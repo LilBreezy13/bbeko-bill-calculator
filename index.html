@@ -310,7 +310,7 @@
   <div id="historyInner">
   <button id="closeHistory" onclick="closeHistoryPage(true)" aria-label="Close">&larr; Back</button>
 
-    <h5 id="historyTitle">Last Calculations</h5>
+    <h5 id="historyTitle">History</h5>
     <ul id="historyList"></ul>
   </div>
 </div>
@@ -515,11 +515,14 @@ try {
         document.getElementById("historyPage").style.display = "none";
     }
 
-    function resetForm() {
+ function resetForm() {
     // Clear inputs
     document.getElementById("schoolName").value = "";
     let inputs = document.querySelectorAll("#terminalCandidates input");
     inputs.forEach(input => input.value = "");
+
+    // Reset exam type dropdown back to default
+    document.getElementById("registrationType").value = "";
 
     // Hide summary, show form again
     document.getElementById("summarySection").style.display = "none";
