@@ -282,7 +282,7 @@
           
 
  <div id="historyLinkBefore" class="history-link">
-  <a onclick="openHistoryPage()">Last 5 History</a>
+  <a onclick="openHistoryPage()">View History?</a>
 </div>
 
 
@@ -295,7 +295,7 @@
             <button id="smsBtn" class="login_btn">Send via SMS</button>
            
          <div id="historyLinkAfter" class="history-link" style="display:none;">
-  <a onclick="openHistoryPage()">Last 5 History</a>
+  <a onclick="openHistoryPage()">View History? </a>
 </div>
 
          
@@ -310,7 +310,7 @@
   <div id="historyInner">
   <button id="closeHistory" onclick="closeHistoryPage(true)" aria-label="Close">&larr; Back</button>
 
-    <h5 id="historyTitle">Last 5 Calculations</h5>
+    <h5 id="historyTitle">Last Calculations</h5>
     <ul id="historyList"></ul>
   </div>
 </div>
@@ -449,7 +449,7 @@ document.getElementById("historyLinkBefore").style.display = "none";
 document.getElementById("historyLinkAfter").style.display = "block";
 
 
-       // Save last 5 history (with full breakdown)
+      // Save history (unlimited, but handle storage full case)
 let history = JSON.parse(localStorage.getItem("calcHistory")) || [];
 history.unshift({
     school: schoolName,
@@ -457,8 +457,17 @@ history.unshift({
     date: new Date().toLocaleString(),
     breakdown: categories // store category details
 });
-        if (history.length > 5) history.pop();
+
+try {
+    localStorage.setItem("calcHistory", JSON.stringify(history));
+} catch (e) {
+    if (e.name === "QuotaExceededError") {
+        // If storage is full, drop the oldest entry and try again
+        history.pop();
         localStorage.setItem("calcHistory", JSON.stringify(history));
+    }
+}
+
 
         // Set sharing
         document.getElementById("whatsappBtn").setAttribute("onclick", `sendWhatsApp('${encodeURIComponent(finalMessage)}')`);
