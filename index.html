@@ -406,20 +406,20 @@ function closeHistoryDetail() {
         }
 
         let categories = {
-            "Pre-School": (parseInt(document.getElementById("nursery").value) || 0) * 8 +
-                          (parseInt(document.getElementById("kg1").value) || 0) * 8 +
-                          (parseInt(document.getElementById("kg2").value) || 0) * 8,
+            "Pre-School": (parseInt(document.getElementById("nursery").value) || 0) * 9 +
+                          (parseInt(document.getElementById("kg1").value) || 0) * 9 +
+                          (parseInt(document.getElementById("kg2").value) || 0) * 9,
 
-            "Lower Primary": (parseInt(document.getElementById("basic1").value) || 0) * 9 +
-                             (parseInt(document.getElementById("basic2").value) || 0) * 9 +
-                             (parseInt(document.getElementById("basic3").value) || 0) * 9,
+            "Lower Primary": (parseInt(document.getElementById("basic1").value) || 0) * 10 +
+                             (parseInt(document.getElementById("basic2").value) || 0) * 10 +
+                             (parseInt(document.getElementById("basic3").value) || 0) * 10,
 
-            "Upper Primary": (parseInt(document.getElementById("basic4").value) || 0) * 10 +
-                             (parseInt(document.getElementById("basic5").value) || 0) * 10 +
-                             (parseInt(document.getElementById("basic6").value) || 0) * 10,
+            "Upper Primary": (parseInt(document.getElementById("basic4").value) || 0) * 11 +
+                             (parseInt(document.getElementById("basic5").value) || 0) * 11 +
+                             (parseInt(document.getElementById("basic6").value) || 0) * 11,
 
-            "Basic 7-8": (parseInt(document.getElementById("basic7").value) || 0) * 15 +
-                         (parseInt(document.getElementById("basic8").value) || 0) * 15,
+            "Basic 7-8": (parseInt(document.getElementById("basic7").value) || 0) * 17 +
+                         (parseInt(document.getElementById("basic8").value) || 0) * 17,
 
             "Basic 9 - Mock": (parseInt(document.getElementById("basic9").value) || 0) * 20
         };
